@@ -49,6 +49,7 @@ class KTH_Dataset(Dataset):
     def __init__(self, params):
         # parameters of the dataset
         path = params['path']
+        print("Path: ", path)
         assert os.path.exists(path), "The dataset folder does not exist."
 
         unique_mode = params.get('unique_mode', True)
@@ -112,7 +113,7 @@ class KITTI_Dataset(Dataset):
         self.num_samples = params.get('num_samples', None)
         self.unique_mode = params.get('unique_mode', True)
         print("Unique mode: ".format(self.unique_mode))
-        
+
         cur_loc = 0
         possible_starts = []
         while cur_loc < self.X.shape[0] - self.nt + 1:
