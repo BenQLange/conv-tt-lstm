@@ -112,7 +112,7 @@ class KITTI_Dataset(Dataset):
         self.nt = params["num_frames"]
         self.num_samples = params.get('num_samples', None)
         self.unique_mode = params.get('unique_mode', True)
-        print("Unique mode: ".format(self.unique_mode))
+        print("Unique mode:{}".format(self.unique_mode))
 
         cur_loc = 0
         possible_starts = []
