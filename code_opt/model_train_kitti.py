@@ -20,7 +20,7 @@ import numpy as np
 # custom utilities
 from tensorboardX import SummaryWriter
 from utils.convlstmnet import ConvLSTMNet
-from dataloader import KTH_Dataset, MNIST_Dataset
+from dataloader import KTH_Dataset, MNIST_Dataset, KITTI_Dataset
 
 from utils.gpu_affinity import set_affinity
 # from apex import amp
