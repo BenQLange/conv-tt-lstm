@@ -23,7 +23,7 @@ from utils.convlstmnet import ConvLSTMNet
 from dataloader import KTH_Dataset, MNIST_Dataset
 
 from utils.gpu_affinity import set_affinity
-from apex import amp
+# from apex import amp
 
 torch.backends.cudnn.benchmark = True
 
@@ -144,8 +144,8 @@ def main(args):
     else: # if not args.use_fused:
         optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate)
 
-    if args.use_amp:
-        model, optimizer = amp.initialize(model, optimizer, opt_level = "O1")
+    # if args.use_amp:
+    #     model, optimizer = amp.initialize(model, optimizer, opt_level = "O1")
 
     if args.distributed:
         if args.use_apex: # use DDP from apex.parallel
@@ -185,7 +185,7 @@ def main(args):
 
             optimizer.zero_grad()
 
-            if args.use_amp:
+            if False: #args.use_amp:
                 with amp.scale_loss(loss, optimizer) as scaled_loss:
                     scaled_loss.backward()
                 if args.gradient_clipping:
