@@ -103,26 +103,26 @@ class KTH_Dataset(Dataset):
             else min(self.data_samples, self.num_samples)
 
 class KITTI_Dataset(Dataset):
-    def __init__(self, datafile, sourcefile, nt, mode='all'):
-        self.datafile = datafile
-        self.sourcefile = sourcefile
+    def __init__(self, params):
+        self.datafile = params["path"]
+        self.sourcefile = params["sources"]
         self.X = hkl.load(self.datafile)
         self.sources = hkl.load(self.sourcefile)
-        self.nt = nt
-        self.mode = mode
+        self.nt = params["num_frames"]
+        self.num_samples = params.get('num_samples', None)
+        self.unique_mode = params.get('unique_mode', True)
+        print("Unique mode: ".format(self.unique_mode))
+        
         cur_loc = 0
         possible_starts = []
         while cur_loc < self.X.shape[0] - self.nt + 1:
             if self.sources[cur_loc] == self.sources[cur_loc + self.nt - 1]:
                 possible_starts.append(cur_loc)
 
-                if mode=='all':
+                if not self.unique_mode:
                     cur_loc += 1
-                elif mode=='unique':
-                    cur_loc += self.nt
                 else:
-                    print('Error. Wrong Mode')
-                    break
+                    cur_loc += self.nt
             else:
                 cur_loc += 1
         self.possible_starts = possible_starts
@@ -132,4 +132,5 @@ class KITTI_Dataset(Dataset):
         return self.X[loc:loc+self.nt]
 
     def __len__(self):
-        return len(self.possible_starts)
+        return len(self.possible_starts) if self.num_samples is None \
+            else min(len(self.possible_starts), self.num_samples)
