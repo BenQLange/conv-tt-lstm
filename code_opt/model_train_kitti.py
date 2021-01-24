@@ -264,7 +264,6 @@ def main(args):
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                'loss': errors,
                 }, "checkpoint_{}.pt".format(epoch))
 
     if args.local_rank == 0:
@@ -276,7 +275,6 @@ def main(args):
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
-        'loss': errors,
         }, "trained_model.pt".format(epoch))
 
 
