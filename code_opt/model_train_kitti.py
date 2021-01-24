@@ -257,6 +257,16 @@ def main(args):
             for param_group in optimizer.param_groups:
                 param_group['lr'] *= args.lr_decay_rate
 
+        # Save a checkpoint
+        if epoch%50==0:
+            print("Saving a checkpoint at epoch: {}".format(epoch))
+            torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': errors,
+                }, ".checkpoint_{}_t+1.pt".format(epoch))
+
     if args.local_rank == 0:
         torch.save(model.state_dict(), "checkpoint.pt")
 
