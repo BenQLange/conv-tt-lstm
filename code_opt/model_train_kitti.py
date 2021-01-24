@@ -73,7 +73,7 @@ def main(args):
     Dataset = {"KTH": KTH_Dataset, "MNIST": MNIST_Dataset, "KITTI": KITTI_Dataset}[args.dataset]
 
     DATA_DIR = os.path.join("../../Dataset",
-        {"MNIST": "mnist", "KTH": "kth", "KITTI":"Kitti"}[args.dataset])
+        {"MNIST": "mnist", "KTH": "kth", "KITTI":"KITTI"}[args.dataset])
 
     # batch size for each process
     total_batch_size  = args.batch_size
