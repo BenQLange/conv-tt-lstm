@@ -72,7 +72,7 @@ def main(args):
     ## Dataset Preparation (KTH, MNIST)
     Dataset = {"KTH": KTH_Dataset, "MNIST": MNIST_Dataset, "KITTI": KITTI_Dataset}[args.dataset]
 
-    DATA_DIR = os.path.join("../Dataset",
+    DATA_DIR = os.path.join("../../Dataset",
         {"MNIST": "mnist", "KTH": "kth", "KITTI":"Kitti"}[args.dataset])
 
     # batch size for each process
