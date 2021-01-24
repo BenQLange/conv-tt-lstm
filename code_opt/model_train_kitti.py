@@ -258,7 +258,7 @@ def main(args):
                 param_group['lr'] *= args.lr_decay_rate
 
         # Save a checkpoint
-        if (epoch-1)%50==0:
+        if (epoch)%50==0:
             print("Saving a checkpoint at epoch: {}".format(epoch))
             torch.save({
                 'epoch': epoch,
