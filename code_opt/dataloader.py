@@ -9,19 +9,20 @@ import glob
 import math
 import numpy as np
 from torch.utils.data.dataset import Dataset
-
+import hickle as hkl
+import torch
 
 class MNIST_Dataset(Dataset):
 
     def __init__(self, params):
-        # parameters of the dataset 
+        # parameters of the dataset
         path = params['path']
         assert os.path.exists(path), "The file does not exist."
 
         self.num_frames  = params['num_frames']
         self.num_samples = params.get('num_samples', None)
 
-        self.random_crop = params.get('random_crop', False) 
+        self.random_crop = params.get('random_crop', False)
 
         self.img_height   = params.get('height',  64)
         self.img_width    = params.get('width',   64)
@@ -32,11 +33,11 @@ class MNIST_Dataset(Dataset):
         self.data_frames  = self.data.shape[1]
 
     def __getitem__(self, index):
-        start = random.randint(0, self.data_frames - 
+        start = random.randint(0, self.data_frames -
             self.num_frames) if self.random_crop else 0
 
         data  = np.float32(self.data[index, start : start + self.num_frames] / 255.0)
-        return data 
+        return data
 
     def __len__(self):
         return len(self.data_samples) if self.num_samples is None \
@@ -60,7 +61,7 @@ class KTH_Dataset(Dataset):
         self.img_channels = params.get('channels', 3)
 
         self.training     = params.get('training', False)
-        
+
         # parse the files in the data folder
         if self.training:
             self.files = glob.glob(os.path.join(path, '*.npz*'))
@@ -70,7 +71,7 @@ class KTH_Dataset(Dataset):
         self.clips = []
         for i in range(len(self.files)):
             data = np.load(self.files[i])["data"]
-            data_frames = data.shape[0] 
+            data_frames = data.shape[0]
 
             self.clips += [(i, t) for t in range(data_frames - self.num_frames)] if not unique_mode \
                 else [(i, t * self.num_frames) for t in range(data_frames // self.num_frames)]
@@ -88,7 +89,7 @@ class KTH_Dataset(Dataset):
         if img_height == self.img_height and img_width == self.img_width:
             clip = data[start_frame : start_frame + self.num_frames]
         else: # resizing the input is needed
-            clip = np.stack([resize(data[t], (self.img_height, self.img_width)) 
+            clip = np.stack([resize(data[t], (self.img_height, self.img_width))
                 for t in range(self.num_frames)], axis = 0)
 
         data = np.float32(clip)
@@ -100,3 +101,35 @@ class KTH_Dataset(Dataset):
     def __len__(self):
         return self.data_samples if self.num_samples is None \
             else min(self.data_samples, self.num_samples)
+
+class KITTI_Dataset(Dataset):
+    def __init__(self, datafile, sourcefile, nt, mode='all'):
+        self.datafile = datafile
+        self.sourcefile = sourcefile
+        self.X = hkl.load(self.datafile)
+        self.sources = hkl.load(self.sourcefile)
+        self.nt = nt
+        self.mode = mode
+        cur_loc = 0
+        possible_starts = []
+        while cur_loc < self.X.shape[0] - self.nt + 1:
+            if self.sources[cur_loc] == self.sources[cur_loc + self.nt - 1]:
+                possible_starts.append(cur_loc)
+
+                if mode=='all':
+                    cur_loc += 1
+                elif mode=='unique':
+                    cur_loc += self.nt
+                else:
+                    print('Error. Wrong Mode')
+                    break
+            else:
+                cur_loc += 1
+        self.possible_starts = possible_starts
+
+    def __getitem__(self, index):
+        loc = self.possible_starts[index]
+        return self.X[loc:loc+self.nt]
+
+    def __len__(self):
+        return len(self.possible_starts)
