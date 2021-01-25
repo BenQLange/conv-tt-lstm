@@ -158,8 +158,8 @@ def main(args):
     checkpoint = torch.load("checkpoint_150.pt")
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    epoch = checkpoint['epoch']
-    print("Loaded succesfully at {}".format())
+    loaded_epoch = checkpoint['epoch']
+    print("Loaded succesfully at {}".format(loaded_epoch))
 
     for epoch in range(151,args.num_epochs):
 
