@@ -155,7 +155,12 @@ def main(args):
             from torch.nn.parallel import DistributedDataParallel as DDP
             model = DDP(model, device_ids = [args.local_rank])
 
-    for epoch in range(args.num_epochs):
+    checkpoint = torch.load("checkpoint_150.pt")
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['model_state_dict'])
+    print("Loaded succesfully")
+
+    for epoch in range(151,args.num_epochs):
 
         ## Phase 1: Learning on the training set
         model.train()
